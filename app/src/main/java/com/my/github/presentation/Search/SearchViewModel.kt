@@ -38,11 +38,6 @@ class SearchViewModel @Inject constructor(
     private set
   var state by mutableStateOf<State>(State.Searching)
 
-  init {
-    searchQuery = "jsi"
-    search()
-  }
-
   fun onEvent(event: Event) {
     when (event) {
       Event.Search -> search()
