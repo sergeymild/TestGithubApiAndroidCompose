@@ -11,6 +11,8 @@ import com.my.github.data.remote.GithubApi
 import com.my.github.domain.models.GithubDownloadedRepository
 import com.my.github.domain.models.GithubRepository
 import com.my.github.extensions.saveFileToDownloads
+import com.my.github.helpers.generateDownloadFileName
+import com.my.github.helpers.generateDownloadLink
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,11 +24,12 @@ class SearchViewModel @Inject constructor(
   private val dao: GithubDao
 ) : ViewModel() {
   sealed class Event {
-    data object Search : Event()
+    data object OnSearch : Event()
     data class OnDownload(val index: Int) : Event()
   }
 
   sealed class State {
+    data object Initial : State()
     data object Searching : State()
     data object Loaded : State()
     data object Error : State()
@@ -36,11 +39,11 @@ class SearchViewModel @Inject constructor(
   var searchQuery by mutableStateOf("")
   var repositories = mutableStateListOf<GithubRepository>()
     private set
-  var state by mutableStateOf<State>(State.Searching)
+  var state by mutableStateOf<State>(State.Initial)
 
   fun onEvent(event: Event) {
     when (event) {
-      Event.Search -> search()
+      Event.OnSearch -> search()
       is Event.OnDownload -> {
         downloadFile(event.index)
       }
@@ -67,8 +70,8 @@ class SearchViewModel @Inject constructor(
 
     viewModelScope.launch {
       try {
-        val response = api.downloadFile("/repos/${repo.fullName}/zipball/${repo.defaultBranch}")
-        val fileName = "${repo.fullName.replace("/", "_")}_${repo.defaultBranch}.zip"
+        val response = api.downloadFile(generateDownloadLink(repo.fullName, repo.defaultBranch))
+        val fileName = generateDownloadFileName(repo.fullName, repo.defaultBranch)
         val savedPath = response.saveFileToDownloads(fileName)
         dao.insert(
           GithubDownloadedRepository(

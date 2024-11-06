@@ -29,7 +29,7 @@ fun SearchInputView(viewModel: SearchViewModel) {
     ),
     keyboardActions = KeyboardActions(onSearch = {
       keyboardController?.hide()
-      viewModel.onEvent(SearchViewModel.Event.Search)
+      viewModel.onEvent(SearchViewModel.Event.OnSearch)
     })
 
   )

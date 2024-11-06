@@ -1,5 +1,6 @@
 package com.my.github.presentation.Search
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -21,6 +22,7 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel(), onOpenDownloads: 
     Column(modifier = Modifier.padding(padding)) {
       SearchInputView(viewModel)
       when (viewModel.state) {
+        SearchViewModel.State.Initial -> Box {}
         SearchViewModel.State.Error -> SearchErrorView(onRetry = viewModel::search)
         SearchViewModel.State.Searching -> LoadingView()
         SearchViewModel.State.Loaded -> SearchRepositoriesListView(viewModel)

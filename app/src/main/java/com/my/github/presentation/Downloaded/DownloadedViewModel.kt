@@ -6,17 +6,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.my.github.data.local.GithubDao
 import com.my.github.domain.models.GithubDownloadedRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class DownloadedViewModel @Inject constructor(private val dao: GithubDao): ViewModel() {
   sealed class Event {
-    data object Load : Event()
+    data object OnLoad : Event()
     data class OnDelete(val index: Int) : Event()
   }
 
@@ -33,7 +33,7 @@ class DownloadedViewModel @Inject constructor(private val dao: GithubDao): ViewM
   fun onEvent(event: Event) {
     when (event) {
       is Event.OnDelete -> deleteRepository(event.index)
-      Event.Load -> fetchAll()
+      Event.OnLoad -> fetchAll()
     }
   }
 
@@ -46,6 +46,9 @@ class DownloadedViewModel @Inject constructor(private val dao: GithubDao): ViewM
 
   private fun deleteRepository(index: Int) {
     viewModelScope.launch {
+      val path = repositories[index].path
+      val file = File(path)
+      if (file.exists()) file.delete()
       dao.deleteById(repositories[index].id)
       repositories.removeAt(index)
     }

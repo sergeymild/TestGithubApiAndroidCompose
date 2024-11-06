@@ -15,7 +15,7 @@ import com.my.github.presentation.Downloaded.views.DownloadedRepositoriesListVie
 fun DownloadedScreen(viewModel: DownloadedViewModel = hiltViewModel(), goBack: () -> Unit = {}) {
 
   LaunchedEffect(key1 = Unit) {
-    viewModel.onEvent(DownloadedViewModel.Event.Load)
+    viewModel.onEvent(DownloadedViewModel.Event.OnLoad)
   }
 
   Scaffold(
